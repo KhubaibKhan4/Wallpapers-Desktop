@@ -42,7 +42,13 @@ object WallpaperApiClient {
     }
 
     suspend fun getWallpapers(page: Int, per_page: Int): Wallpapers {
-        val url = "https://api.pexels.com/v1/curated?per_page=${page}&per_page=${per_page}"
+        val url =
+            "https://api.pexels.com/v1/curated?page=${page}&per_page=${per_page}"
+        return client.get(url).body()
+    }
+
+    suspend fun getSearched(query: String, page: Int, per_page: Int): Wallpapers {
+        val url = "https://api.pexels.com/v1/search?query=${query}&page=${page}&per_page=${per_page}"
         return client.get(url).body()
     }
 }

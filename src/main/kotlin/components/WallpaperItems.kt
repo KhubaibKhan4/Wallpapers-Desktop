@@ -2,11 +2,11 @@ package components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -18,29 +18,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import data.model.Photo
 import utils.loadPicture
 
 @Composable
-fun WallpaperList(photo: List<Photo?>) {
+fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit) {
     LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 350.dp),
         modifier = Modifier.fillMaxWidth()) {
         items(photo) { photos ->
-            photos?.let { WallpaperItems(it) }
+            photos?.let { WallpaperItems(it, onItemClick)}
         }
     }
 }
 
 @Composable
-fun WallpaperItems(photo: Photo) {
+fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
 
     Card(
         elevation = 8.dp,
         modifier = Modifier
-            .width(240.dp)
-            .height(400.dp)
+            .width(200.dp)
+            .height(200.dp)
+            .clickable {
+                onItemClick(photo)
+            }
             .padding(16.dp),
         shape = MaterialTheme.shapes.medium
     ) {

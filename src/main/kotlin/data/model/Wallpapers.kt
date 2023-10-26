@@ -11,7 +11,7 @@ data class Wallpapers(
     @SerializedName("page")
     val page: Int?,
     @SerializedName("per_page")
-    val perPage: Int?,
+    val perPage: Int? ,
     @SerializedName("photos")
     val photos: List<Photo>?,
     @SerializedName("total_results")

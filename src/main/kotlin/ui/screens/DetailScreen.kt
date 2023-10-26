@@ -18,6 +18,12 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import data.model.Photo
 import utils.loadPicture
+import javax.swing.DesktopManager
+import javax.swing.JComponent
+import javax.swing.JDesktopPane
+import javax.swing.UIManager
+import javax.swing.plaf.DesktopIconUI
+import javax.swing.plaf.DesktopPaneUI
 
 
 @OptIn(ExperimentalMaterial3Api::class)

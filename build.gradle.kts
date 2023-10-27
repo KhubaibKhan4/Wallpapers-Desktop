@@ -2,7 +2,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.compose")
+   // id("org.jetbrains.compose")
+    id("org.jetbrains.compose") version "1.5.0-dev1114"
     id ("org.jetbrains.kotlin.plugin.serialization") version "1.6.21"
 
 }
@@ -28,6 +29,7 @@ dependencies {
     implementation(compose.uiTooling)
     implementation(compose.preview)
     implementation(compose.animationGraphics)
+    implementation(compose.materialIconsExtended)
 
     implementation("io.ktor:ktor-client-cio-jvm:2.3.5")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.5")
@@ -35,6 +37,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("io.ktor:ktor-server-default-headers:2.3.5")
     implementation("ch.qos.logback:logback-classic:1.2.9")
+    implementation("media.kamel:kamel-image:0.8.2")
 }
 
 compose.desktop {

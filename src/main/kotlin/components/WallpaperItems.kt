@@ -1,10 +1,13 @@
 package components
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,15 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import data.model.Photo
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
-import utils.loadPicture
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -110,7 +115,7 @@ fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .clip(MaterialTheme.shapes.medium)
-                .background(color = if (active) Color.DarkGray else Color.Blue),
+                .background(color = if (active) Color.LightGray else Color.DarkGray),
         ) {
             TooltipArea(
                 tooltip = {
@@ -132,48 +137,67 @@ fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
                 delayMillis = 600,
 
                 ) {
-                // Load image from the URL
-                loadPicture("${photo.src!!.landscape}")?.let { image ->
-                    Image(
-                        image,
+                val imageUrl = photo.src?.landscape?.let { asyncPainterResource(data = it) }
+                if (imageUrl != null) {
+                    KamelImage(
+                        resource = imageUrl,
                         contentDescription = null,
                         contentScale = if (active) ContentScale.Crop else ContentScale.FillBounds,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                color = Color.Black.copy(alpha = 0.4f)
+                        modifier = Modifier.fillMaxSize(),
+                        onLoading = { progress ->
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                progress = progress,
+                                modifier = Modifier.size(50.dp),
+                                strokeWidth = 4.dp,
+                                strokeCap = StrokeCap.Round
                             )
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "By ${photo.photographer}",
-                                style = MaterialTheme.typography.subtitle1,
-                                color = Color.White
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Icon(
-                                Icons.Default.Favorite,
+                        },
+                        onFailure = {
+                            Image(
+                                painter = painterResource("logo.png"),
                                 contentDescription = null,
-                                tint = Color.Red,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.fillMaxWidth(),
+                                contentScale = ContentScale.Crop
                             )
-                        }
+                        },
+                        animationSpec = tween(),
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = Color.Black.copy(alpha = 0.4f)
+                        )
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "By ${photo.photographer}",
+                            style = MaterialTheme.typography.subtitle1,
+                            color = Color.White
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Icon(
+                            Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             }

@@ -1,25 +1,19 @@
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.res.ResourceLoader
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import data.model.Photo
 import ui.navigation.Screen
@@ -64,7 +58,13 @@ fun main() = application {
     var action by remember {
         mutableStateOf("Last Action: None")
     }
-
+    val view = rememberVectorPainter(image = Icons.Default.Accessibility)
+    val update = rememberVectorPainter(image = Icons.Default.Update)
+    val exit = rememberVectorPainter(image = Icons.Default.ExitToApp)
+    val lightTheme = rememberVectorPainter(image = Icons.Default.LightMode)
+    val darkTheme = rememberVectorPainter(image = Icons.Default.DarkMode)
+    val refresh = rememberVectorPainter(image = Icons.Default.Refresh)
+    val search = rememberVectorPainter(image = Icons.Default.Search)
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -78,14 +78,23 @@ fun main() = application {
                     onClick = {
                         isRefresh = !isRefresh
                     },
-                    shortcut = KeyShortcut(key = Key.R, ctrl = true)
+                    shortcut = KeyShortcut(key = Key.R, ctrl = true),
+                    icon = refresh
                 )
                 Item(
                     "Search",
                     onClick = {
                         isSearchActive = !isSearchActive
                     },
-                    shortcut = KeyShortcut(key = Key.S, ctrl = true)
+                    shortcut = KeyShortcut(key = Key.S, ctrl = true),
+                    icon = search
+                )
+                Item(
+                    "Exit",
+                    onClick = { exitApplication() },
+                    shortcut = KeyShortcut(key = Key.Escape,alt = true),
+                    mnemonic = 'E',
+                    icon = exit
                 )
 
             }
@@ -95,27 +104,40 @@ fun main() = application {
                     "Themes", enabled = true,
                     mnemonic = 'T',
                 ) {
-                    Item("Dark Theme", enabled = true, mnemonic = 'D',
+                    Item(
+                        "Dark Theme", enabled = true, mnemonic = 'D',
                         shortcut = KeyShortcut(key = Key.D, ctrl = true),
                         onClick = {
-                            isActive = true
-                        })
-                    Item("Light Theme", enabled = true, mnemonic = 'L',
+
+                        },
+                        icon = darkTheme
+                    )
+                    Item(
+                        "Light Theme", enabled = true, mnemonic = 'L',
                         shortcut = KeyShortcut(key = Key.L, ctrl = true),
                         onClick = {
-                            isActive = true
-                        })
+
+                        },
+                        icon = lightTheme
+                    )
                 }
             }
 
             Menu("View", mnemonic = 'V') {
-                Item("About", icon = AboutIcon, onClick = { action = "Last action: About" })
                 Item(
-                    "Exit",
-                    onClick = { exitApplication() },
-                    shortcut = KeyShortcut(key = Key.Escape, ctrl = true, alt = true),
-                    mnemonic = 'E'
+                    "About",
+                    icon = view,
+                    onClick = { action = "Last action: About" },
+                    shortcut = KeyShortcut(key = Key.A, ctrl = true)
                 )
+
+                Item(
+                    "Checks for Updates",
+                    icon = update,
+                    onClick = { action = "Last action: Update" },
+                    shortcut = KeyShortcut(key = Key.U, ctrl = true)
+                )
+
             }
 
         }
@@ -139,7 +161,7 @@ fun main() = application {
             Tray(
                 icon = painterResource(resourcePath = "logo.png", loader = ResourceLoader.Default),
                 state = trayState,
-                tooltip = "Wallpaper",
+                tooltip = "Wallpaper Desktop",
                 onAction = {},
                 menu = {
                     Item(
@@ -153,45 +175,16 @@ fun main() = application {
                         text = "Notification",
                         onClick = {
                             trayState.sendNotification(notification)
-                        }
+                        },
                     )
                     Item(
                         text = "Exit",
                         onClick = {
                             exitApplication()
-                        }
+                        },
                     )
                 }
             )
-        }
-        if (isActive) {
-            Popup(
-                alignment = Alignment.Center,
-                offset = IntOffset(x = 0, y = 0),
-                focusable = true,
-                onDismissRequest = { isVisible = !isVisible },
-            ) {
-                Column(
-                    modifier = Modifier.width(200.dp)
-                        .height(140.dp)
-                        .background(color = Color.White),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("This is a popup with buttons", style = MaterialTheme.typography.h6)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Button(onClick = { isActive = false }) {
-                            Text("OK")
-                        }
-                        Button(onClick = { isVisible = false }) {
-                            Text("Cancel")
-                        }
-                    }
-                }
-            }
         }
     }
 }

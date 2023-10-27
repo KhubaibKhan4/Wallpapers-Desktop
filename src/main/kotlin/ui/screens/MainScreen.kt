@@ -1,15 +1,16 @@
 package ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -104,55 +105,65 @@ fun MainScreen(samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, 
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AnimatedVisibility(isSearchActive) {
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        modifier = Modifier.fillMaxWidth(0.4f),
-                        enabled = true,
-                        label = {
-                            Text("Search")
-                        },
-                        placeholder = {
-                            Text(text = "Search Wallpapers")
-                        },
-                        trailingIcon = {
-                            IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        isSearch = true
-                                        isLoading = true
-                                        val searchData =
-                                            WallpaperApiClient.getSearched(
-                                                query = text,
-                                                page = 1,
-                                                per_page = 80,
-                                            )
-                                        data = searchData
-                                    }
-                                },
-                                modifier = Modifier.pointerHoverIcon(icon = PointerIcon.Hand)
-                            ) {
-                                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                            }
-                        }, keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Characters,
-                            autoCorrect = true,
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Search
-                        ),
-                        keyboardActions = KeyboardActions(onSearch = {
-                            scope.launch {
-                                val searchData =
-                                    WallpaperApiClient.getSearched(
-                                        query = text,
-                                        page = 1,
-                                        per_page = 80,
-                                    )
-                                data = searchData
-                            }
-                        })
+                        TextField(
+                            value = text,
+                            onValueChange = { text = it },
+                            modifier = Modifier.fillMaxWidth(0.4f).padding(top = 8.dp, bottom = 8.dp)
+                                .pointerHoverIcon(icon = PointerIcon(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR))),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = TextFieldDefaults.textFieldColors(
+                                textColor = Color.Black,
+                                backgroundColor = Color.LightGray,
+                                cursorColor = Color.DarkGray,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                trailingIconColor = Color.DarkGray,
+                                placeholderColor = Color.DarkGray,
+                            ),
+                            enabled = true,
+                            placeholder = {
+                                Text(text = "Search Wallpapers")
+                            },
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        scope.launch {
+                                            isSearch = true
+                                            isLoading = true
+                                            val searchData =
+                                                WallpaperApiClient.getSearched(
+                                                    query = text,
+                                                    page = 1,
+                                                    per_page = 80,
+                                                )
+                                            data = searchData
+                                        }
+                                    },
+                                    modifier = Modifier.pointerHoverIcon(icon = PointerIcon.Hand)
+                                ) {
+                                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Characters,
+                                autoCorrect = true,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Search
+                            ),
+                            keyboardActions = KeyboardActions(onSearch = {
+                                scope.launch {
+                                    val searchData =
+                                        WallpaperApiClient.getSearched(
+                                            query = text,
+                                            page = 1,
+                                            per_page = 80,
+                                        )
+                                    data = searchData
+                                }
+                            })
 
-                    )
+                        )
+
                 }
                 Box(modifier = Modifier.fillMaxWidth()) {
                     data?.photos?.let { wallpapers ->

@@ -87,10 +87,7 @@ fun main() = application {
                     },
                     shortcut = KeyShortcut(key = Key.S, ctrl = true)
                 )
-                Menu("Actions", mnemonic = 'A') {
-                    Item("About", icon = AboutIcon, onClick = { action = "Last action: About" })
-                    Item("Exit", onClick = { isOpen = false }, shortcut = KeyShortcut(key = Key.Escape), mnemonic = 'E')
-                }
+
             }
 
             Menu("Setting", mnemonic = 'S') {
@@ -109,6 +106,16 @@ fun main() = application {
                             isActive = true
                         })
                 }
+            }
+
+            Menu("View", mnemonic = 'V') {
+                Item("About", icon = AboutIcon, onClick = { action = "Last action: About" })
+                Item(
+                    "Exit",
+                    onClick = { exitApplication() },
+                    shortcut = KeyShortcut(key = Key.Escape, ctrl = true, alt = true),
+                    mnemonic = 'E'
+                )
             }
 
         }

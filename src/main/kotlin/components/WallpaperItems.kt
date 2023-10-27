@@ -30,8 +30,7 @@ import utils.loadPicture
 @Composable
 fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit) {
     val scope = rememberCoroutineScope()
-    val state = rememberLazyGridState(initialFirstVisibleItemIndex = 0, initialFirstVisibleItemScrollOffset = 2)
-    val stateScroll = rememberScrollState()
+    val state = rememberLazyGridState(initialFirstVisibleItemIndex = 0, initialFirstVisibleItemScrollOffset = 0)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -72,7 +71,7 @@ fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit) {
         VerticalScrollbar(
             modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
             adapter = rememberScrollbarAdapter(
-                scrollState = stateScroll,
+                scrollState = state,
             ),
             interactionSource = MutableInteractionSource()
         )

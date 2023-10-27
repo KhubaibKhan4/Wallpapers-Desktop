@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import java.awt.Cursor
 
 @Composable
-fun MainScreen(samplePhoto: Photo, onItemClick: (Photo) -> Unit) {
+fun MainScreen(samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, onItemClick: (Photo) -> Unit) {
 
     val scope = rememberCoroutineScope()
     var data by remember {
@@ -53,7 +53,8 @@ fun MainScreen(samplePhoto: Photo, onItemClick: (Photo) -> Unit) {
 
 
     var isLoading by remember { mutableStateOf(true) }
-    LaunchedEffect(isRefreshed) {
+    LaunchedEffect(isRefresh) {
+        isLoading = true
         try {
             val wallpapers = WallpaperApiClient.getWallpapers(page, 80)
             data = wallpapers
@@ -62,6 +63,8 @@ fun MainScreen(samplePhoto: Photo, onItemClick: (Photo) -> Unit) {
 
         } catch (e: ClientRequestException) {
             e.printStackTrace()
+            isLoading = false
+        } finally {
             isLoading = false
         }
 
@@ -85,173 +88,135 @@ fun MainScreen(samplePhoto: Photo, onItemClick: (Photo) -> Unit) {
     }
 
     MaterialTheme {
-        Scaffold(modifier = Modifier.fillMaxWidth().background(color = Color.White), topBar = {
-            TopAppBar(
-                title = { Text("Wallpaper Desktop") },
-                actions = {
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AnimatedVisibility(isSearchActive) {
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        modifier = Modifier.fillMaxWidth(0.4f),
+                        enabled = true,
+                        label = {
+                            Text("Search")
+                        },
+                        placeholder = {
+                            Text(text = "Search Wallpapers")
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        isSearch = true
+                                        isLoading = true
+                                        val searchData =
+                                            WallpaperApiClient.getSearched(
+                                                query = text,
+                                                page = 1,
+                                                per_page = 80,
+                                            )
+                                        data = searchData
+                                    }
+                                },
+                                modifier = Modifier.pointerHoverIcon(icon = PointerIcon.Hand)
+                            ) {
+                                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                            }
+                        }, keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Characters,
+                            autoCorrect = true,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Search
+                        ),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            scope.launch {
+                                val searchData =
+                                    WallpaperApiClient.getSearched(
+                                        query = text,
+                                        page = 1,
+                                        per_page = 80,
+                                    )
+                                data = searchData
+                            }
+                        })
+
+                    )
+                }
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    data?.photos?.let { wallpapers ->
+                        WallpaperList(wallpapers, onItemClick)
+                    }
                     IconButton(
                         onClick = {
-                            isActive = !isActive
+                            if (!isLoading) {
+                                page++
+                                isLoading = true
+                                scope.launch {
+                                    try {
+                                        val wallpapers = WallpaperApiClient.getWallpapers(page, 80)
+                                        data = wallpapers
+                                        isLoading = false
+                                        println("$data")
+                                    } catch (e: ClientRequestException) {
+                                        e.printStackTrace()
+                                        isLoading = false
+                                    }
+                                }
+                            }
                         },
-                        modifier = Modifier.pointerHoverIcon(
-                            icon = PointerIcon(
-                                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                            )
-                        )
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(color = Color.DarkGray.copy(alpha = 0.80f))
+                            .align(Alignment.CenterEnd)
                     ) {
                         Icon(
-                            imageVector = if (isActive) Icons.Default.Close else Icons.Default.Search,
-                            null
+                            imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null,
+                            tint = Color.White
                         )
                     }
                     IconButton(
                         onClick = {
-                            isRefreshed = !isRefreshed
-                        },
-                        modifier = Modifier.pointerHoverIcon(
-                            icon = PointerIcon(
-                                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                            )
-                        )
-                    ) {
-                        Icon(imageVector = Icons.Default.Refresh, null)
-                    }
-                },
-                backgroundColor = Color.White,
-                contentColor = Color.Black
-            )
-        }
-        ) {
-            if (isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(top = it.calculateTopPadding()),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    AnimatedVisibility(isActive) {
-                        OutlinedTextField(
-                            value = text,
-                            onValueChange = { text = it },
-                            modifier = Modifier.fillMaxWidth(0.4f),
-                            enabled = true,
-                            label = {
-                                Text("Search")
-                            },
-                            placeholder = {
-                                Text(text = "Search Wallpapers")
-                            },
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        scope.launch {
-                                            isSearch = true
-                                            isLoading = true
-                                            val searchData =
-                                                WallpaperApiClient.getSearched(
-                                                    query = text,
-                                                    page = 1,
-                                                    per_page = 80,
-                                                )
-                                            data = searchData
-                                        }
-                                    },
-                                    modifier = Modifier.pointerHoverIcon(icon = PointerIcon.Hand)
-                                ) {
-                                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                                }
-                            }, keyboardOptions = KeyboardOptions(
-                                capitalization = KeyboardCapitalization.Characters,
-                                autoCorrect = true,
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Search
-                            ),
-                            keyboardActions = KeyboardActions(onSearch = {
+                            if (!isLoading && page > 1) {
+                                page--
+                                isLoading = true
                                 scope.launch {
-                                    val searchData =
-                                        WallpaperApiClient.getSearched(
-                                            query = text,
-                                            page = 1,
-                                            per_page = 80,
-                                        )
-                                    data = searchData
+                                    try {
+                                        val wallpapers = WallpaperApiClient.getWallpapers(page, 80)
+                                        data = wallpapers
+                                        isLoading = false
+                                        println("$data")
+                                    } catch (e: ClientRequestException) {
+                                        e.printStackTrace()
+                                        isLoading = false
+                                    }
                                 }
-                            })
-
+                            }
+                        },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(color = Color.DarkGray.copy(alpha = 0.80f))
+                            .align(Alignment.CenterStart)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = null,
+                            tint = Color.White
                         )
                     }
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        data?.photos?.let { wallpapers ->
-                            WallpaperList(wallpapers, onItemClick)
-                        }
-                        IconButton(
-                            onClick = {
-                                if (!isLoading) {
-                                    page++
-                                    isLoading = true
-                                    scope.launch {
-                                        try {
-                                            val wallpapers = WallpaperApiClient.getWallpapers(page, 80)
-                                            data = wallpapers
-                                            isLoading = false
-                                            println("$data")
-                                        } catch (e: ClientRequestException) {
-                                            e.printStackTrace()
-                                            isLoading = false
-                                        }
-                                    }
-                                }
-                            },
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(color = Color.DarkGray.copy(alpha = 0.80f))
-                                .align(Alignment.CenterEnd)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                if (!isLoading && page > 1) {
-                                    page--
-                                    isLoading = true
-                                    scope.launch {
-                                        try {
-                                            val wallpapers = WallpaperApiClient.getWallpapers(page, 80)
-                                            data = wallpapers
-                                            isLoading = false
-                                            println("$data")
-                                        } catch (e: ClientRequestException) {
-                                            e.printStackTrace()
-                                            isLoading = false
-                                        }
-                                    }
-                                }
-                            },
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(color = Color.DarkGray.copy(alpha = 0.80f))
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                    }
-
                 }
+
             }
         }
-
     }
+
 
 }

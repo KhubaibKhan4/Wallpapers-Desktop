@@ -3,10 +3,9 @@ package components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -14,24 +13,62 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import data.model.Photo
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import utils.loadPicture
+import kotlin.coroutines.CoroutineContext
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit) {
-    LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 350.dp),
-        modifier = Modifier.fillMaxWidth()) {
+    val scope = rememberCoroutineScope()
+    val state = rememberLazyGridState(initialFirstVisibleItemIndex = 0, initialFirstVisibleItemScrollOffset = 2)
+
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 350.dp),
+        state = state,
+        modifier = Modifier.fillMaxWidth()
+            .focusable()
+            .onPreviewKeyEvent {
+                when {
+                    (it.isCtrlPressed && it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown) -> {
+                        if (state.firstVisibleItemIndex > 0) {
+                            scope.launch {
+                                state.animateScrollToItem(state.firstVisibleItemIndex - 1)
+                            }
+                        }
+                        true
+                    }
+                    (it.isCtrlPressed && it.key == Key.DirectionDown && it.type == KeyEventType.KeyDown) -> {
+                        if (state.firstVisibleItemIndex < photo.size - 1) {
+                            scope.launch {
+                                state.animateScrollToItem(state.firstVisibleItemIndex + 1)
+                            }
+                        }
+                        true
+                    }
+                    else -> false
+                }
+            }
+    ) {
         items(photo) { photos ->
-            photos?.let { WallpaperItems(it, onItemClick)}
+            photos?.let { WallpaperItems(it, onItemClick) }
         }
     }
 }
 
+
+
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
 

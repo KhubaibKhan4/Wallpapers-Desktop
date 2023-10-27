@@ -1,13 +1,8 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,9 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.res.ResourceLoader
@@ -32,8 +25,6 @@ import data.model.Photo
 import ui.navigation.Screen
 import ui.screens.DetailScreen
 import ui.screens.MainScreen
-import java.awt.TrayIcon
-import javax.swing.JToolBar.Separator
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -64,7 +55,10 @@ fun main() = application {
     var isOpen by remember {
         mutableStateOf(false)
     }
-    var isThemeClick by remember {
+    var isRefresh by remember {
+        mutableStateOf(false)
+    }
+    var isSearchActive by remember {
         mutableStateOf(false)
     }
     var action by remember {
@@ -81,13 +75,17 @@ fun main() = application {
             Menu(text = "File", mnemonic = 'F') {
                 Item(
                     "Refresh",
-                    onClick = { action = "Last Action: Refresh" },
+                    onClick = {
+                        isRefresh = !isRefresh
+                    },
                     shortcut = KeyShortcut(key = Key.R, ctrl = true)
                 )
                 Item(
-                    "New File",
-                    onClick = { action = "Last Action: New File" },
-                    shortcut = KeyShortcut(key = Key.F, ctrl = true)
+                    "Search",
+                    onClick = {
+                        isSearchActive = !isSearchActive
+                    },
+                    shortcut = KeyShortcut(key = Key.S, ctrl = true)
                 )
                 Menu("Actions", mnemonic = 'A') {
                     Item("About", icon = AboutIcon, onClick = { action = "Last action: About" })
@@ -115,7 +113,7 @@ fun main() = application {
 
         }
         when (currentScreen) {
-            Screen.MAIN -> MainScreen(samplePhoto) { photo ->
+            Screen.MAIN -> MainScreen(samplePhoto, isRefresh, isSearchActive) { photo ->
                 currentScreen = Screen.DETAIL
                 selectedDPhoto = photo
             }

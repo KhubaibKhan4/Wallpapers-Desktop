@@ -1,3 +1,4 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -32,6 +33,7 @@ import ui.navigation.Screen
 import ui.screens.DetailScreen
 import ui.screens.MainScreen
 import java.awt.TrayIcon
+import javax.swing.JToolBar.Separator
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -53,6 +55,7 @@ fun main() = application {
         url = null,
         width = null
     )
+
     var selectedDPhoto by remember {
         mutableStateOf(samplePhoto)
     }
@@ -61,9 +64,14 @@ fun main() = application {
     var isOpen by remember {
         mutableStateOf(false)
     }
+    var isThemeClick by remember {
+        mutableStateOf(false)
+    }
     var action by remember {
         mutableStateOf("Last Action: None")
     }
+
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "Wallpaper Desktop",
@@ -81,24 +89,30 @@ fun main() = application {
                     onClick = { action = "Last Action: New File" },
                     shortcut = KeyShortcut(key = Key.F, ctrl = true)
                 )
-                Menu("Actions", mnemonic = 'A'){
-                    CheckboxItem("Advanced Settings",
-                        checked = isOpen,
-                        onCheckedChange = {
-                            isOpen = !isOpen
-                        }
-                    )
-                    if (isOpen){
-                        Menu("Settings"){
-                            Item("Dark Mode", onClick = {action= "Last Action: Setting Dark Mode"})
-                            Item("Light Mode", onClick = {action= "Last Action: Setting Light Mode"})
-                        }
-                    }
-                    Separator()
-                    Item("About", icon = AboutIcon, onClick = {action ="Last action: About"})
-                    Item("Exit", onClick = {isOpen = false}, shortcut = KeyShortcut(key = Key.Escape), mnemonic = 'E')
+                Menu("Actions", mnemonic = 'A') {
+                    Item("About", icon = AboutIcon, onClick = { action = "Last action: About" })
+                    Item("Exit", onClick = { isOpen = false }, shortcut = KeyShortcut(key = Key.Escape), mnemonic = 'E')
                 }
             }
+
+            Menu("Setting", mnemonic = 'S') {
+                Menu(
+                    "Themes", enabled = true,
+                    mnemonic = 'T',
+                ) {
+                    Item("Dark Theme", enabled = true, mnemonic = 'D',
+                        shortcut = KeyShortcut(key = Key.D, ctrl = true),
+                        onClick = {
+                            isActive = true
+                        })
+                    Item("Light Theme", enabled = true, mnemonic = 'L',
+                        shortcut = KeyShortcut(key = Key.L, ctrl = true),
+                        onClick = {
+                            isActive = true
+                        })
+                }
+            }
+
         }
         when (currentScreen) {
             Screen.MAIN -> MainScreen(samplePhoto) { photo ->
@@ -152,34 +166,26 @@ fun main() = application {
                 focusable = true,
                 onDismissRequest = { isVisible = !isVisible },
             ) {
-                Surface(
-                    color = Color.White,
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .size(300.dp, 150.dp)
-                        .offset { IntOffset(100, 100) }
-                        .padding(16.dp),
-                    content = {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text("This is a popup with buttons", style = MaterialTheme.typography.h6)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Button(onClick = { /* do something */ }) {
-                                    Text("OK")
-                                }
-                                Button(onClick = { isVisible = false }) {
-                                    Text("Cancel")
-                                }
-                            }
+                Column(
+                    modifier = Modifier.width(200.dp)
+                        .height(140.dp)
+                        .background(color = Color.White),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("This is a popup with buttons", style = MaterialTheme.typography.h6)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(onClick = { isActive = false }) {
+                            Text("OK")
+                        }
+                        Button(onClick = { isVisible = false }) {
+                            Text("Cancel")
                         }
                     }
-                )
+                }
             }
         }
     }

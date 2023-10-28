@@ -10,6 +10,8 @@ A desktop application for browsing and downloading wallpapers. Built using Kotli
 
 ![Screenshot 3](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/33.png)
 
+## Dark Mode Support
+
 ![Screenshot 4](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/44.png)
 
 ![Screenshot 5](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/55.png)

@@ -4,13 +4,13 @@ A desktop application for browsing and downloading wallpapers. Built using Kotli
 
 ## Screenshots
 
-![Screenshot 1](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/1.png)
+![Screenshot 1](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/11.png)
 
-![Screenshot 2](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/2.png)
+![Screenshot 2](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/22.png)
 
-![Screenshot 3](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/3.png)
+![Screenshot 3](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/33.png)
 
-![Screenshot 4](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/4.png)
+![Screenshot 4](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/44.png)
 
 ## Description
 

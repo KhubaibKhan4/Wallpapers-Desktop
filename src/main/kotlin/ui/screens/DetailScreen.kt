@@ -27,12 +27,14 @@ import androidx.compose.ui.unit.dp
 import data.model.Photo
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import java.awt.SystemTray
+import java.awt.Toolkit
+import java.awt.TrayIcon
+import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.file.Files
-import java.awt.Desktop
-import javax.imageio.ImageIO
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,7 +102,9 @@ fun DetailScreen(selectedDPhoto: Photo, isDarkTheme: Boolean, onBackClick: () ->
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 TextButton(
-                    onClick = { /* Handle setting wallpaper */ },
+                    onClick = {
+                        setWallpaperFromUrl(selectedDPhoto.src!!.landscape.toString())
+                    },
                     modifier = Modifier
                         .height(50.dp)
                         .width(120.dp),
@@ -114,7 +118,9 @@ fun DetailScreen(selectedDPhoto: Photo, isDarkTheme: Boolean, onBackClick: () ->
                 }
                 TextButton(
                     onClick = {
-
+                        val savePath =
+                            "${selectedDPhoto.photographer + selectedDPhoto.width + selectedDPhoto.height}.jpg"
+                        downloadImage(selectedDPhoto.src!!.landscape.toString(), savePath)
                     },
                     modifier = Modifier
                         .height(50.dp)
@@ -129,7 +135,7 @@ fun DetailScreen(selectedDPhoto: Photo, isDarkTheme: Boolean, onBackClick: () ->
                 }
                 TextButton(
                     onClick = {
-
+                        uriHandler.openUri(uri)
                     },
                     modifier = Modifier
                         .height(50.dp)
@@ -147,3 +153,62 @@ fun DetailScreen(selectedDPhoto: Photo, isDarkTheme: Boolean, onBackClick: () ->
     }
 
 }
+
+fun downloadImage(imageUrl: String, fileName: String) {
+    try {
+        val url = URL(imageUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0") // Set a valid user-agent header
+        val inputStream = BufferedInputStream(connection.inputStream)
+        val home = System.getProperty("user.home")
+        val downloadDir = File(home, "Downloads")
+        val file = File(downloadDir, fileName)
+        val outputStream = FileOutputStream(file)
+        val dataBuffer = ByteArray(1024)
+        var bytesRead: Int
+        while (inputStream.read(dataBuffer, 0, 1024).also { bytesRead = it } != -1) {
+            outputStream.write(dataBuffer, 0, bytesRead)
+        }
+        outputStream.close()
+        inputStream.close()
+        showNotification(title = "Wallpaper Image Downloaded", message = "Image downloaded successfully at ${file.absolutePath}")
+        println("Image downloaded successfully at ${file.absolutePath}")
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun setWallpaperFromUrl(imageUrl: String) {
+    try {
+        val url = URL(imageUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0")
+        val imageStream = connection.inputStream
+        val tempFile = File.createTempFile("temp_image", ".jpg")
+        tempFile.deleteOnExit()
+        tempFile.outputStream().use { output ->
+            imageStream.use { input ->
+                input.copyTo(output)
+            }
+        }
+        showNotification(title = "Wallpaper", message = "Wallpaper set successfully.")
+        println("Wallpaper set successfully.")
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun showNotification(title: String, message: String) {
+    if (SystemTray.isSupported()) {
+        val tray = SystemTray.getSystemTray()
+        val image = Toolkit.getDefaultToolkit().getImage("logo.png")
+        val trayIcon = TrayIcon(image, "Notification")
+        trayIcon.setImageAutoSize(true)
+        trayIcon.toolTip = "Notification"
+        tray.add(trayIcon)
+
+        trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO)
+    }
+}
+
+

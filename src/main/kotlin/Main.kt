@@ -46,9 +46,11 @@ fun main() = application {
     }
     var isVisible by remember { mutableStateOf(true) }
     var isActive by remember { mutableStateOf(false) }
-    var isOpen by remember {
+
+    var isDarkTheme by remember {
         mutableStateOf(false)
     }
+
     var isRefresh by remember {
         mutableStateOf(false)
     }
@@ -92,7 +94,7 @@ fun main() = application {
                 Item(
                     "Exit",
                     onClick = { exitApplication() },
-                    shortcut = KeyShortcut(key = Key.Escape,alt = true),
+                    shortcut = KeyShortcut(key = Key.Escape, alt = true),
                     mnemonic = 'E',
                     icon = exit
                 )
@@ -105,18 +107,22 @@ fun main() = application {
                     mnemonic = 'T',
                 ) {
                     Item(
-                        "Dark Theme", enabled = true, mnemonic = 'D',
+                        "Dark Theme",
+                        enabled = if(isDarkTheme) false else true,
+                        mnemonic = 'D',
                         shortcut = KeyShortcut(key = Key.D, ctrl = true),
                         onClick = {
-
+                            isDarkTheme = !isDarkTheme
                         },
                         icon = darkTheme
                     )
                     Item(
-                        "Light Theme", enabled = true, mnemonic = 'L',
+                        "Light Theme",
+                        enabled = isDarkTheme,
+                        mnemonic = 'L',
                         shortcut = KeyShortcut(key = Key.L, ctrl = true),
                         onClick = {
-
+                            isDarkTheme = false
                         },
                         icon = lightTheme
                     )
@@ -142,12 +148,12 @@ fun main() = application {
 
         }
         when (currentScreen) {
-            Screen.MAIN -> MainScreen(samplePhoto, isRefresh, isSearchActive) { photo ->
+            Screen.MAIN -> MainScreen(samplePhoto, isRefresh, isSearchActive, isDarkTheme) { photo ->
                 currentScreen = Screen.DETAIL
                 selectedDPhoto = photo
             }
 
-            Screen.DETAIL -> DetailScreen(selectedDPhoto) {
+            Screen.DETAIL -> DetailScreen(selectedDPhoto, isDarkTheme) {
                 currentScreen = Screen.MAIN
             }
         }

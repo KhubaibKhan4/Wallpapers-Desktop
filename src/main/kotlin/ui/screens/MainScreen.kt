@@ -30,7 +30,9 @@ import kotlinx.coroutines.launch
 import java.awt.Cursor
 
 @Composable
-fun MainScreen(samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, onItemClick: (Photo) -> Unit) {
+fun MainScreen(
+    samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, isDarkTheme: Boolean, onItemClick: (Photo) -> Unit
+) {
 
     val scope = rememberCoroutineScope()
     var data by remember {
@@ -93,76 +95,79 @@ fun MainScreen(samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, 
     MaterialTheme {
         if (isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
+                    .background(color = if (isDarkTheme) Color.Black else Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = if (isDarkTheme) Color.White else MaterialTheme.colors.primary
+                )
             }
         } else {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .background(
+                        color = if (isDarkTheme) Color.Black.copy(alpha = 0.80f) else Color.White,
+                    ),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AnimatedVisibility(isSearchActive) {
-                        TextField(
-                            value = text,
-                            onValueChange = { text = it },
-                            modifier = Modifier.fillMaxWidth(0.4f).padding(top = 8.dp, bottom = 8.dp)
-                                .pointerHoverIcon(icon = PointerIcon(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR))),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                textColor = Color.Black,
-                                backgroundColor = Color.LightGray,
-                                cursorColor = Color.DarkGray,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                trailingIconColor = Color.DarkGray,
-                                placeholderColor = Color.DarkGray,
-                            ),
-                            enabled = true,
-                            placeholder = {
-                                Text(text = "Search Wallpapers")
-                            },
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        scope.launch {
-                                            isSearch = true
-                                            isLoading = true
-                                            val searchData =
-                                                WallpaperApiClient.getSearched(
-                                                    query = text,
-                                                    page = 1,
-                                                    per_page = 80,
-                                                )
-                                            data = searchData
-                                        }
-                                    },
-                                    modifier = Modifier.pointerHoverIcon(icon = PointerIcon.Hand)
-                                ) {
-                                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                                }
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                capitalization = KeyboardCapitalization.Characters,
-                                autoCorrect = true,
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Search
-                            ),
-                            keyboardActions = KeyboardActions(onSearch = {
-                                scope.launch {
-                                    val searchData =
-                                        WallpaperApiClient.getSearched(
+                    TextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        modifier = Modifier.fillMaxWidth(0.4f).padding(top = 8.dp, bottom = 8.dp)
+                            .pointerHoverIcon(icon = PointerIcon(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR))),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = if (isDarkTheme) Color.White else Color.Black,
+                            backgroundColor = Color.LightGray,
+                            cursorColor = if (isDarkTheme) Color.White else Color.DarkGray,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            trailingIconColor = if (isDarkTheme) Color.White else Color.DarkGray,
+                            placeholderColor = if (isDarkTheme) Color.White else Color.DarkGray,
+                        ),
+                        enabled = true,
+                        placeholder = {
+                            Text(text = "Search Wallpapers")
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        isSearch = true
+                                        isLoading = true
+                                        val searchData = WallpaperApiClient.getSearched(
                                             query = text,
                                             page = 1,
                                             per_page = 80,
                                         )
-                                    data = searchData
-                                }
-                            })
+                                        data = searchData
+                                    }
+                                }, modifier = Modifier.pointerHoverIcon(icon = PointerIcon.Hand)
+                            ) {
+                                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Characters,
+                            autoCorrect = true,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Search
+                        ),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            scope.launch {
+                                val searchData = WallpaperApiClient.getSearched(
+                                    query = text,
+                                    page = 1,
+                                    per_page = 80,
+                                )
+                                data = searchData
+                            }
+                        })
 
-                        )
+                    )
 
                 }
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -187,14 +192,16 @@ fun MainScreen(samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, 
                                 }
                             }
                         },
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(color = Color.DarkGray.copy(alpha = 0.80f))
+                        modifier = Modifier.size(40.dp)
+                            .background(
+                                color = if (isDarkTheme) Color.White.copy(alpha = 0.80f) else Color.DarkGray.copy(alpha = 0.80f)
+                            )
                             .align(Alignment.CenterEnd)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null,
-                            tint = Color.White
+                            imageVector = Icons.Default.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = if (isDarkTheme) Color.Black else Color.White
                         )
                     }
                     IconButton(
@@ -215,21 +222,22 @@ fun MainScreen(samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, 
                                 }
                             }
                         },
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(color = Color.DarkGray.copy(alpha = 0.80f))
+                        modifier = Modifier.size(40.dp)
+                            .background(
+                                color = if (isDarkTheme) Color.White.copy(alpha = 0.80f) else Color.DarkGray.copy(alpha = 0.80f)
+                            )
                             .align(Alignment.CenterStart)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = null,
-                            tint = Color.White
+                            imageVector = Icons.Default.KeyboardArrowLeft,
+                            contentDescription = null,
+                            tint = if (isDarkTheme) Color.Black else Color.White
                         )
                     }
                 }
 
             }
         }
+
     }
-
-
 }

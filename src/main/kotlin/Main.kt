@@ -1,10 +1,17 @@
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -14,6 +21,10 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.res.ResourceLoader
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
 import data.model.Photo
 import ui.navigation.Screen
@@ -46,11 +57,18 @@ fun main() = application {
     }
     var isVisible by remember { mutableStateOf(true) }
     var isActive by remember { mutableStateOf(false) }
+    val dialogState = rememberDialogState()
 
     var isDarkTheme by remember {
         mutableStateOf(false)
     }
+    var isAbout by remember {
+        mutableStateOf(false)
+    }
 
+    var isUpdate by remember {
+        mutableStateOf(false)
+    }
     var isRefresh by remember {
         mutableStateOf(false)
     }
@@ -67,6 +85,7 @@ fun main() = application {
     val darkTheme = rememberVectorPainter(image = Icons.Default.DarkMode)
     val refresh = rememberVectorPainter(image = Icons.Default.Refresh)
     val search = rememberVectorPainter(image = Icons.Default.Search)
+
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -108,7 +127,7 @@ fun main() = application {
                 ) {
                     Item(
                         "Dark Theme",
-                        enabled = if(isDarkTheme) false else true,
+                        enabled = if (isDarkTheme) false else true,
                         mnemonic = 'D',
                         shortcut = KeyShortcut(key = Key.D, ctrl = true),
                         onClick = {
@@ -133,14 +152,18 @@ fun main() = application {
                 Item(
                     "About",
                     icon = view,
-                    onClick = { action = "Last action: About" },
+                    onClick = {
+                        isAbout = !isAbout
+                    },
                     shortcut = KeyShortcut(key = Key.A, ctrl = true)
                 )
 
                 Item(
                     "Checks for Updates",
                     icon = update,
-                    onClick = { action = "Last action: Update" },
+                    onClick = {
+                        isUpdate = !isUpdate
+                    },
                     shortcut = KeyShortcut(key = Key.U, ctrl = true)
                 )
 
@@ -184,6 +207,12 @@ fun main() = application {
                         },
                     )
                     Item(
+                        text = if (isDarkTheme) "Light Theme" else "Dark Theme",
+                        onClick = {
+                            isDarkTheme = !isDarkTheme
+                        },
+                    )
+                    Item(
                         text = "Exit",
                         onClick = {
                             exitApplication()
@@ -193,12 +222,104 @@ fun main() = application {
             )
         }
     }
-}
-
-object AboutIcon : Painter() {
-    override val intrinsicSize = Size(256f, 256f)
-
-    override fun DrawScope.onDraw() {
-        drawOval(Color(0xFFFFA500))
+    if (isAbout) {
+        DialogWindow(
+            onCloseRequest = {
+                isAbout = !isAbout
+            },
+            state = dialogState,
+            visible = true,
+            title = "About Us",
+            icon = view,
+            undecorated = false,
+            transparent = false,
+            resizable = false,
+            enabled = true,
+            focusable = true
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "About Us",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+                Text(
+                    text = "Welcome to the Wallpaper Desktop Application, a project crafted with passion and dedication by Muhammad Khubaib Imtiaz. This application is designed to provide you with a stunning collection of wallpapers to beautify your desktop and bring a fresh aesthetic to your workspace. Explore a diverse range of high-quality images carefully curated to cater to your unique preferences and style.",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+            }
+        }
+    }
+    if (isUpdate) {
+        DialogWindow(
+            onCloseRequest = {
+                isUpdate = !isUpdate
+            },
+            state = dialogState,
+            visible = true,
+            title = "Update Available",
+            icon = update,
+            undecorated = false,
+            transparent = false,
+            resizable = false,
+            enabled = true,
+            focusable = true
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Update Available",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+                Text(
+                    text = "A new version of the Wallpaper Desktop Application is available. We recommend updating to the latest version to enjoy new features, enhancements, and bug fixes.",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            isUpdate = !isUpdate
+                        },
+                        modifier = Modifier.padding(top = 10.dp)
+                    ) {
+                        Text("Update Now")
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            isUpdate = !isUpdate
+                        },
+                        modifier = Modifier.padding(top = 10.dp)
+                    ) {
+                        Text("Remind Me Later")
+                    }
+                }
+            }
+        }
     }
 }

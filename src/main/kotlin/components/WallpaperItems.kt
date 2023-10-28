@@ -134,7 +134,7 @@ fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
                 tooltipPlacement = TooltipPlacement.CursorPoint(
                     alignment = Alignment.BottomEnd
                 ),
-                delayMillis = 600,
+                delayMillis = 1000,
 
                 ) {
                 val imageUrl = photo.src?.landscape?.let { asyncPainterResource(data = it) }

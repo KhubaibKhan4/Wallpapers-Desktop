@@ -27,6 +27,12 @@ import androidx.compose.ui.unit.dp
 import data.model.Photo
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.file.Files
+import java.awt.Desktop
+import javax.imageio.ImageIO
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +75,7 @@ fun DetailScreen(selectedDPhoto: Photo, isDarkTheme: Boolean, onBackClick: () ->
         Image(
             imageVector = Icons.Default.KeyboardArrowLeft,
             colorFilter = ColorFilter.tint(
-                color =if (isDarkTheme) Color.LightGray else  Color.Blue
+                color = if (isDarkTheme) Color.LightGray else Color.Blue
             ),
             contentDescription = null,
             modifier = Modifier.align(Alignment.TopStart)
@@ -122,7 +128,9 @@ fun DetailScreen(selectedDPhoto: Photo, isDarkTheme: Boolean, onBackClick: () ->
                     Text("Download")
                 }
                 TextButton(
-                    onClick = { },
+                    onClick = {
+
+                    },
                     modifier = Modifier
                         .height(50.dp)
                         .width(120.dp),

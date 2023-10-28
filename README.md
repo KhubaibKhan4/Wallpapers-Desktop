@@ -12,6 +12,12 @@ A desktop application for browsing and downloading wallpapers. Built using Kotli
 
 ![Screenshot 4](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/44.png)
 
+![Screenshot 5](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/55.png)
+
+![Screenshot 6](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/66.png)
+
+![Screenshot 7](https://github.com/KhubaibKhan4/Wallpapers-Desktop/blob/master/screenshots/77.png)
+
 ## Description
 
 Wallpapers-Desktop is a cross-platform desktop application developed using Kotlin Multiplatform, which allows users to browse, search, and download high-quality wallpapers. The application leverages the power of Compose Desktop for building a modern and intuitive user interface, making the process of exploring and downloading wallpapers seamless and enjoyable.

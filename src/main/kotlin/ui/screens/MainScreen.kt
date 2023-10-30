@@ -1,6 +1,7 @@
 package ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,6 +30,7 @@ import data.model.Wallpapers
 import io.ktor.client.plugins.*
 import kotlinx.coroutines.launch
 import java.awt.Cursor
+import javax.swing.JToolBar.Separator
 
 @Composable
 fun MainScreen(
@@ -99,9 +102,25 @@ fun MainScreen(
                     .background(color = if (isDarkTheme) Color.Black else Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(
-                    color = if (isDarkTheme) Color.White else MaterialTheme.colors.primary
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource("logo.png"),
+                        contentDescription = null,
+                        modifier = Modifier.size(80.dp)
+                            .padding(bottom = 10.dp)
+                    )
+                    Separator()
+                    LinearProgressIndicator(
+                        modifier = Modifier.width(
+                            40.dp
+                        ),
+                        color = MaterialTheme.colors.primary
+                    )
+                }
             }
         } else {
             Column(

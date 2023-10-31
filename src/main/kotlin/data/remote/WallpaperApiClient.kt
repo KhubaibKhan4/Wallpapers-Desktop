@@ -1,6 +1,7 @@
 package data.remote
 
-import data.model.Wallpapers
+import data.model.Photo.Wallpapers
+import data.model.Video.VideoWallpaper
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -47,8 +48,14 @@ object WallpaperApiClient {
         return client.get(url).body()
     }
 
+
     suspend fun getSearched(query: String, page: Int, per_page: Int): Wallpapers {
         val url = "https://api.pexels.com/v1/search?query=${query}&page=${page}&per_page=${per_page}"
+        return client.get(url).body()
+    }
+
+    suspend fun getPopularVideo(page: Int, per_page: Int): VideoWallpaper {
+        val url = "https://api.pexels.com/videos/popular?per_page=${per_page}&page=${page}"
         return client.get(url).body()
     }
 }

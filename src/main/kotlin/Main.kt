@@ -1,7 +1,5 @@
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.OutlinedButton
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -12,10 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
@@ -26,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
-import data.model.Photo
+import data.model.Photo.Photo
 import ui.navigation.Screen
 import ui.screens.DetailScreen
 import ui.screens.MainScreen
@@ -186,7 +181,7 @@ fun main() = application {
 
         }
         when (currentScreen) {
-            Screen.MAIN -> MainScreen(samplePhoto, isRefresh, isSearchActive, isDarkTheme) { photo ->
+            Screen.MAIN -> MainScreen(samplePhoto, isRefresh, isSearchActive, isDarkTheme, isVideoMode) { photo ->
                 currentScreen = Screen.DETAIL
                 selectedDPhoto = photo
             }

@@ -24,7 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import data.model.Photo
+import data.model.Photo.Photo
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import java.awt.SystemTray

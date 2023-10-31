@@ -1,4 +1,4 @@
-package data.model
+package data.model.Photo
 
 
 import com.google.gson.annotations.SerializedName

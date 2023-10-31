@@ -25,8 +25,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import components.WallpaperList
 import data.remote.WallpaperApiClient
-import data.model.Photo
-import data.model.Wallpapers
+import data.model.Photo.Photo
+import data.model.Photo.Wallpapers
+import data.model.Video.VideoWallpaper
 import io.ktor.client.plugins.*
 import kotlinx.coroutines.launch
 import java.awt.Cursor
@@ -34,12 +35,21 @@ import javax.swing.JToolBar.Separator
 
 @Composable
 fun MainScreen(
-    samplePhoto: Photo, isRefresh: Boolean, isSearchActive: Boolean, isDarkTheme: Boolean, onItemClick: (Photo) -> Unit
+    samplePhoto: Photo,
+    isRefresh: Boolean,
+    isSearchActive: Boolean,
+    isDarkTheme: Boolean,
+    isVideoMode: Boolean,
+    onItemClick: (Photo) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
     var data by remember {
         mutableStateOf<Wallpapers?>(null)
+    }
+
+    var videoWallpaper by remember {
+        mutableStateOf<VideoWallpaper?>(null)
     }
 
     var text by remember {
@@ -68,6 +78,23 @@ fun MainScreen(
             data = wallpapers
             isLoading = false
             println("$data")
+
+        } catch (e: ClientRequestException) {
+            e.printStackTrace()
+            isLoading = false
+        } finally {
+            isLoading = false
+        }
+
+    }
+
+    LaunchedEffect(isVideoMode) {
+        isLoading = true
+        try {
+            val videoWallpapers = WallpaperApiClient.getPopularVideo(page, 80)
+            videoWallpaper = videoWallpapers
+            isLoading = false
+            println("$videoWallpaper")
 
         } catch (e: ClientRequestException) {
             e.printStackTrace()
@@ -190,8 +217,18 @@ fun MainScreen(
 
                 }
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    data?.photos?.let { wallpapers ->
-                        WallpaperList(wallpapers, onItemClick)
+                    if (isVideoMode) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Wait, Just starting working on Video Mode.....")
+                        }
+                    } else {
+                        data?.photos?.let { wallpapers ->
+                            WallpaperList(wallpapers, onItemClick)
+                        }
+
                     }
                     IconButton(
                         onClick = {

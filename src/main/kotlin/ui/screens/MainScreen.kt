@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import components.WallpaperList
-import data.WallpaperApiClient
+import data.remote.WallpaperApiClient
 import data.model.Photo
 import data.model.Wallpapers
 import io.ktor.client.plugins.*

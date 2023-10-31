@@ -62,6 +62,10 @@ fun main() = application {
     var isDarkTheme by remember {
         mutableStateOf(false)
     }
+
+    var isVideoMode by remember {
+        mutableStateOf(false)
+    }
     var isAbout by remember {
         mutableStateOf(false)
     }
@@ -85,6 +89,7 @@ fun main() = application {
     val darkTheme = rememberVectorPainter(image = Icons.Default.DarkMode)
     val refresh = rememberVectorPainter(image = Icons.Default.Refresh)
     val search = rememberVectorPainter(image = Icons.Default.Search)
+    val video = rememberVectorPainter(image = Icons.Default.FeaturedVideo)
 
 
     Window(
@@ -121,6 +126,16 @@ fun main() = application {
             }
 
             Menu("Setting", mnemonic = 'S') {
+                Item(
+                    text = "Enable Video Wallpapers",
+                    icon = video,
+                    enabled = true,
+                    onClick = {
+                        isVideoMode = !isVideoMode
+                    },
+                    mnemonic = 'V',
+                    shortcut = KeyShortcut(key = Key.V, ctrl = true)
+                )
                 Menu(
                     "Themes", enabled = true,
                     mnemonic = 'T',

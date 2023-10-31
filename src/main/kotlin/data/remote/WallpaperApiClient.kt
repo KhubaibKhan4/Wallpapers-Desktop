@@ -1,4 +1,4 @@
-package data
+package data.remote
 
 import data.model.Wallpapers
 import io.ktor.client.*

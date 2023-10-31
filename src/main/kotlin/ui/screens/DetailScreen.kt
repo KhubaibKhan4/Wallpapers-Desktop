@@ -6,10 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,110 +40,111 @@ fun DetailScreen(selectedDPhoto: Photo, isDarkTheme: Boolean, onBackClick: () ->
     val uri = selectedDPhoto.url.toString()
     val uriHandler = LocalUriHandler.current
 
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .background(color = if (isDarkTheme) Color.Black else Color.White).padding(16.dp)
-    ) {
-
-
-        val imageUrl = selectedDPhoto.src?.landscape?.let { asyncPainterResource(data = it) }
-        if (imageUrl != null) {
-            KamelImage(
-                resource = imageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-                    .clip(shape = RoundedCornerShape(24.dp)),
-                onLoading = {
-                    CircularProgressIndicator(
-                        color = if (isDarkTheme) Color.White else MaterialTheme.colors.primary
-                    )
-                },
-                onFailure = {
-                    Image(
-                        painter = painterResource("logo.png"),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                },
-                animationSpec = tween()
-            )
-        }
-        Image(
-            imageVector = Icons.Default.KeyboardArrowLeft,
-            colorFilter = ColorFilter.tint(
-                color = if (isDarkTheme) Color.LightGray else Color.Blue
-            ),
-            contentDescription = null,
-            modifier = Modifier.align(Alignment.TopStart)
-                .padding(top = 10.dp, start = 10.dp)
-                .clickable {
-                    onBackClick()
-                }
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+    MaterialTheme(colors = if (isDarkTheme) darkColors() else lightColors()) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(color = if (isDarkTheme) Color.Black else Color.White).padding(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
+
+
+            val imageUrl = selectedDPhoto.src?.landscape?.let { asyncPainterResource(data = it) }
+            if (imageUrl != null) {
+                KamelImage(
+                    resource = imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                        .clip(shape = RoundedCornerShape(24.dp)),
+                    onLoading = {
+                        CircularProgressIndicator(
+                            color = if (isDarkTheme) Color.White else MaterialTheme.colors.primary
+                        )
+                    },
+                    onFailure = {
+                        Image(
+                            painter = painterResource("logo.png"),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    animationSpec = tween()
+                )
+            }
+            Image(
+                imageVector = Icons.Default.KeyboardArrowLeft,
+                colorFilter = ColorFilter.tint(
+                    color = if (isDarkTheme) Color.LightGray else Color.Blue
+                ),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.TopStart)
+                    .padding(top = 10.dp, start = 10.dp)
+                    .clickable {
+                        onBackClick()
+                    }
+            )
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+                    .fillMaxSize()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextButton(
-                    onClick = {
-                        setWallpaperFromUrl(selectedDPhoto.src!!.landscape.toString())
-                    },
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
                     modifier = Modifier
-                        .height(50.dp)
-                        .width(120.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.LightGray,
-                        contentColor = Color.Blue
-                    )
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Text("Set Wallpaper")
-                }
-                TextButton(
-                    onClick = {
-                        val savePath =
-                            "${selectedDPhoto.photographer + selectedDPhoto.width + selectedDPhoto.height}.jpg"
-                        downloadImage(selectedDPhoto.src!!.landscape.toString(), savePath)
-                    },
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(120.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.LightGray,
-                        contentColor = Color.Blue
-                    )
-                ) {
-                    Text("Download")
-                }
-                TextButton(
-                    onClick = {
-                        uriHandler.openUri(uri)
-                    },
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(120.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.LightGray,
-                        contentColor = Color.Blue
-                    )
-                ) {
-                    Text("Share")
+                    TextButton(
+                        onClick = {
+                            setWallpaperFromUrl(selectedDPhoto.src!!.landscape.toString())
+                        },
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(120.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.LightGray,
+                            contentColor = Color.Blue
+                        )
+                    ) {
+                        Text("Set Wallpaper")
+                    }
+                    TextButton(
+                        onClick = {
+                            val savePath =
+                                "${selectedDPhoto.photographer + selectedDPhoto.width + selectedDPhoto.height}.jpg"
+                            downloadImage(selectedDPhoto.src!!.landscape.toString(), savePath)
+                        },
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(120.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.LightGray,
+                            contentColor = Color.Blue
+                        )
+                    ) {
+                        Text("Download")
+                    }
+                    TextButton(
+                        onClick = {
+                            uriHandler.openUri(uri)
+                        },
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(120.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.LightGray,
+                            contentColor = Color.Blue
+                        )
+                    ) {
+                        Text("Share")
+                    }
                 }
             }
         }
@@ -171,7 +169,10 @@ fun downloadImage(imageUrl: String, fileName: String) {
         }
         outputStream.close()
         inputStream.close()
-        showNotification(title = "Wallpaper Image Downloaded", message = "Image downloaded successfully at ${file.absolutePath}")
+        showNotification(
+            title = "Wallpaper Image Downloaded",
+            message = "Image downloaded successfully at ${file.absolutePath}"
+        )
         println("Image downloaded successfully at ${file.absolutePath}")
     } catch (e: Exception) {
         e.printStackTrace()

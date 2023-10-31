@@ -24,10 +24,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import components.WallpaperList
-import data.remote.WallpaperApiClient
 import data.model.Photo.Photo
 import data.model.Photo.Wallpapers
 import data.model.Video.VideoWallpaper
+import data.remote.WallpaperApiClient
 import io.ktor.client.plugins.*
 import kotlinx.coroutines.launch
 import java.awt.Cursor
@@ -42,6 +42,7 @@ fun MainScreen(
     isVideoMode: Boolean,
     onItemClick: (Photo) -> Unit
 ) {
+
 
     val scope = rememberCoroutineScope()
     var data by remember {
@@ -89,19 +90,19 @@ fun MainScreen(
     }
 
     LaunchedEffect(isVideoMode) {
-        isLoading = true
-        try {
-            val videoWallpapers = WallpaperApiClient.getPopularVideo(page, 80)
-            videoWallpaper = videoWallpapers
-            isLoading = false
-            println("$videoWallpaper")
+        /* isLoading = true
+         try {
+             val videoWallpapers = WallpaperApiClient.getPopularVideo(page, 80)
+             videoWallpaper = videoWallpapers
+             isLoading = false
+             println("$videoWallpaper")
 
-        } catch (e: ClientRequestException) {
-            e.printStackTrace()
-            isLoading = false
-        } finally {
-            isLoading = false
-        }
+         } catch (e: ClientRequestException) {
+             e.printStackTrace()
+             isLoading = false
+         } finally {
+             isLoading = false
+         }*/
 
     }
 
@@ -122,11 +123,11 @@ fun MainScreen(
         }
     }
 
-    MaterialTheme {
+    MaterialTheme(colors = if (isDarkTheme) darkColors() else lightColors()) {
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize()
-                    .background(color = if (isDarkTheme) Color.Black else Color.White),
+                    .background(color = if (isDarkTheme) Color.DarkGray else Color.White),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -216,17 +217,23 @@ fun MainScreen(
                     )
 
                 }
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     if (isVideoMode) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Wait, Just starting working on Video Mode.....")
+                            Column {
+
+                                Text("Wait, Just starting working on Video Mode.....")
+                            }
                         }
                     } else {
                         data?.photos?.let { wallpapers ->
-                            WallpaperList(wallpapers, onItemClick)
+                            WallpaperList(wallpapers, onItemClick, isDarkTheme)
                         }
 
                     }

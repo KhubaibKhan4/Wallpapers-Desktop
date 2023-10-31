@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit) {
+fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit, isDarkTheme: Boolean) {
     val scope = rememberCoroutineScope()
     val state = rememberLazyGridState(initialFirstVisibleItemIndex = 0, initialFirstVisibleItemScrollOffset = 0)
 
@@ -70,7 +70,7 @@ fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit) {
                 }
         ) {
             items(photo) { photos ->
-                photos?.let { WallpaperItems(it, onItemClick) }
+                photos?.let { WallpaperItems(it, onItemClick, isDarkTheme) }
             }
         }
         VerticalScrollbar(
@@ -87,7 +87,7 @@ fun WallpaperList(photo: List<Photo?>, onItemClick: (Photo) -> Unit) {
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
+fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit, isDarkTheme: Boolean) {
     var active by remember {
         mutableStateOf(false)
     }
@@ -126,7 +126,8 @@ fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
                     ) {
                         Text(
                             text = "Photographer:  ${photo.photographer}",
-                            modifier = Modifier.padding(10.dp)
+                            modifier = Modifier.padding(10.dp),
+                            color = if (isDarkTheme) Color.DarkGray else MaterialTheme.colors.error
                         )
                     }
                 },
@@ -135,7 +136,6 @@ fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit) {
                     alignment = Alignment.BottomEnd
                 ),
                 delayMillis = 1000,
-
                 ) {
                 val imageUrl = photo.src?.landscape?.let { asyncPainterResource(data = it) }
                 if (imageUrl != null) {

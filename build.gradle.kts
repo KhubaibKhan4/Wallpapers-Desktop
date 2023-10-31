@@ -39,6 +39,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.9")
     implementation("media.kamel:kamel-image:0.8.2")
     implementation("net.java.dev.jna:jna:5.9.0")
+    implementation("uk.co.caprica:vlcj:4.8.2")
 }
 
 compose.desktop {

@@ -136,7 +136,7 @@ fun WallpaperItems(photo: Photo, onItemClick: (Photo) -> Unit, isDarkTheme: Bool
                     alignment = Alignment.BottomEnd
                 ),
                 delayMillis = 1000,
-                ) {
+            ) {
                 val imageUrl = photo.src?.landscape?.let { asyncPainterResource(data = it) }
                 if (imageUrl != null) {
                     KamelImage(
